@@ -9,5 +9,11 @@ resource "aws_instance" "app_server" {
 
   provisioner "remote-exec" {
     inline = ["sudo yum install -y docker", "sudo service docker start"]
+    connection {
+      type        = "ssh"
+      user        = "ec2-user"
+      private_key = file("~/.ssh/react.pem")
+      host        = self.public_ip
+    }
   }
 }
