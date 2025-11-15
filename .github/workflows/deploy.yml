@@ -32,8 +32,7 @@ jobs:
         # Install Ansible
         sudo apt-get install -y ansible
 
-        # Install AWS CLI
-        sudo apt-get install -y awscli
+        
 
         # Install Docker
         sudo apt-get install -y docker.io
@@ -44,7 +43,6 @@ jobs:
         # Verify tools
         terraform -version
         ansible --version
-        aws --version
         docker --version
 
     # ------------------------------
