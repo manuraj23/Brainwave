@@ -9,9 +9,47 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # ------------------------------
+    # CHECKOUT CODE
+    # ------------------------------
     - name: Checkout code
       uses: actions/checkout@v3
 
+    # ------------------------------
+    # INSTALL REQUIRED TOOLS
+    # ------------------------------
+    - name: Install required packages (Terraform, Ansible, AWS CLI, Docker, Python)
+      run: |
+        sudo apt-get update -y
+
+        # Install Terraform
+        sudo apt-get install -y gnupg software-properties-common
+        wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+        echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+        sudo apt-get update -y
+        sudo apt-get install terraform -y
+
+        # Install Ansible
+        sudo apt-get install -y ansible
+
+        # Install AWS CLI
+        sudo apt-get install -y awscli
+
+        # Install Docker
+        sudo apt-get install -y docker.io
+        sudo systemctl start docker
+        sudo systemctl enable docker
+        sudo usermod -aG docker $USER
+
+        # Verify tools
+        terraform -version
+        ansible --version
+        aws --version
+        docker --version
+
+    # ------------------------------
+    # SET UP NODE + INSTALL DEPENDENCIES
+    # ------------------------------
     - name: Set up Node
       uses: actions/setup-node@v3
       with:
@@ -23,18 +61,30 @@ jobs:
     - name: Build React app
       run: npm run build
 
-    # - name: Build Docker image
+    # ------------------------------
+    # DOCKER BUILD & PUSH (OPTIONAL)
+    # ------------------------------
+    # - name: Build & Push Docker image
     #   run: |
-    #     docker build -t your-dockerhub-username/brainwave:latest .
+    #     docker build -t ${{ secrets.DOCKER_USERNAME }}/brainwave:latest .
     #     echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-    #     docker push your-dockerhub-username/brainwave:latest
+    #     docker push ${{ secrets.DOCKER_USERNAME }}/brainwave:latest
 
+    # ------------------------------
+    # TERRAFORM DEPLOYMENT
+    # ------------------------------
     - name: Terraform Init & Apply
       working-directory: ./terraform
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: |
         terraform init
         terraform apply -auto-approve -var="key_name=${{ secrets.AWS_KEY_NAME }}"
 
+    # ------------------------------
+    # RUN ANSIBLE
+    # ------------------------------
     - name: Run Ansible Playbook
       uses: dawidd6/action-ansible-playbook@v2
       with:
