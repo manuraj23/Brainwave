@@ -66,7 +66,16 @@ jobs:
         file: ./docker/Dockerfile                 # <- use your docker/Dockerfile path
         push: true
         tags: manuraj23/brainwave:latest          # <- ensure this matches your Docker Hub repo
+   
+   
+    - name: Set up SSH key for Terraform
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/react.pem
+        chmod 600 ~/.ssh/react.pem
 
+
+        
     - name: Terraform Init & Apply
       working-directory: ./terraform
       env:
