@@ -31,6 +31,8 @@ jobs:
         sudo apt-get update -y
         sudo apt-get install terraform -y
 
+        sudo apt-get install -y awscli
+
         # Install Ansible
         sudo apt-get install -y ansible
 
@@ -81,4 +83,4 @@ jobs:
         playbook: ansible/playbook.yml
         inventory: ansible/inventory.ini
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        
+
