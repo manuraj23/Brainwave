@@ -2,7 +2,7 @@ resource "aws_instance" "app_server" {
   ami           = "ami-0cae6d6fe6048ca2c" # Amazon Linux 2
   instance_type = "t2.micro"
   key_name      = "react"
-
+  vpc_security_group_ids = [aws_security_group.allow_ssh.id]
   tags = {
     Name = "ReactAppServer"
   }
