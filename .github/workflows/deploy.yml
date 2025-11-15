@@ -74,7 +74,6 @@ jobs:
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/react.pem
         chmod 600 ~/.ssh/react.pem
 
-
         
     - name: Terraform Init & Apply
       working-directory: ./terraform
