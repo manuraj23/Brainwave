@@ -1,0 +1,6 @@
+define host {
+  use             linux-server
+  host_name       react-app-server
+  address         your-ec2-public-ip
+  check_command   check-host-alive
+}
