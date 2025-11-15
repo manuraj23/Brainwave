@@ -31,7 +31,6 @@ jobs:
         sudo apt-get update -y
         sudo apt-get install terraform -y
 
-        sudo apt-get install -y awscli
 
         # Install Ansible
         sudo apt-get install -y ansible
